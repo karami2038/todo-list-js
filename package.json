@@ -2,11 +2,14 @@
   "name": "todo-list-js-async",
   "version": "1.0.0",
   "description": "A todo list written in JavaScript that is written to be asynchronous",
-  "license": "ISC",
+  "license": "MIT",
   "author": "Karami",
   "type": "module",
-  "main": "index.js",
+  "main": "cli.js",
   "scripts": {
-    "test": "node index.js"
+    "test": "node cli.js"
+  },
+  "dependencies": {
+    "commander": "^14.0.1"
   }
 }
