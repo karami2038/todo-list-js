@@ -20,6 +20,7 @@ No interactive menu; the program processes a single command and exits.
 
 **Command:** `add`  
 **Params:**
+
 - `-t`/`--title` (string, required)
 - `--desc` (string, optional)
 - `-p`/`--priority` (int, optional, default 5)
@@ -32,6 +33,7 @@ Adds a new task. Ignores if title missing.
 
 **Command:** `remove`  
 **Params:**
+
 - `-t`/`--title` (string, required)
 
 **Behavior:**  
@@ -41,6 +43,7 @@ Removes task by title. If not found or missing, outputs message.
 
 **Command:** `done`  
 **Params:**
+
 - `-t`/`--title` (string, required)
 
 **Behavior:**  
@@ -50,6 +53,7 @@ Marks task as done by title. If not found or missing, outputs message.
 
 **Command:** `list`  
 **Params:**
+
 - `-d`/`--deadline` (string, optional)
 - `--done` (flag, optional)
 - `--today` (flag, optional)
@@ -57,6 +61,7 @@ Marks task as done by title. If not found or missing, outputs message.
 
 **Behavior:**  
 Lists tasks by criteria.
+
 - If no params: lists all tasks.
 - If `--done`: lists completed tasks.
 - If `--today`/`--tomorrow`: lists tasks for today/tomorrow.

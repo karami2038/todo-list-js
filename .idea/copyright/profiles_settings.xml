@@ -1,0 +1,13 @@
+<component name="CopyrightManager">
+  <settings>
+    <module2copyright>
+      <element module="Project Files" copyright="MIT License header-only" />
+    </module2copyright>
+    <LanguageOptions name="JavaScript">
+      <option name="separateBefore" value="true" />
+      <option name="separateAfter" value="true" />
+      <option name="lenBefore" value="100" />
+      <option name="lenAfter" value="100" />
+    </LanguageOptions>
+  </settings>
+</component>

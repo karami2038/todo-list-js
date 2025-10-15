@@ -1,6 +1,6 @@
 {
   "name": "todo-list-js-async",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "A todo list written in JavaScript that is written to be asynchronous",
   "license": "MIT",
   "author": "Karami",
@@ -10,6 +10,7 @@
     "test": "node cli.js"
   },
   "dependencies": {
-    "commander": "^14.0.1"
+    "commander": "^14.0.1",
+    "uuid": "^13.0.0"
   }
 }
