@@ -1,4 +1,4 @@
-# todo-list-js-async
+# todo-list-js
 This is a simple demonstrational package
 for managing a todo list using JavaScript and asynchronously updating a JSON file on disk.
 
