@@ -10,9 +10,9 @@
 import {fileURLToPath} from 'node:url';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import Task from "./task.js";
+import Task from "../models/task.js";
 
-const ROOT_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'); // PROJECT_ROOT/
+const ROOT_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..'); // PROJECT_ROOT
 const DATA_DIR = path.join(ROOT_DIR, 'data'); // PROJECT_ROOT/data/
 const DATA_FILE = path.join(DATA_DIR, 'tasks.json'); // PROJECT_ROOT/data/tasks.json
 
@@ -21,7 +21,7 @@ export class TaskStorage {
         this.path = filePath;
     }
 
-    async _ensureFile() { // Return promise
+    async #ensureFile() { // Return promise
         try {
             // Wait for promise
             await fs.access(this.path);
@@ -32,7 +32,7 @@ export class TaskStorage {
     }
 
     async loadTasks() { // Return promise
-        await this._ensureFile();
+        await this.#ensureFile();
         const data = await fs.readFile(this.path, 'utf8');
         const rawTasks = JSON.parse(data);
         return rawTasks.map(
