@@ -6,7 +6,7 @@ import {CliView} from "../views/cliView.js";
 
 const storage = new TaskStorage();
 
-export class CliService {
+export class TaskService {
     constructor(taskStorage, cliView) {
         this.taskStorage = taskStorage;
         this.cliView = cliView;
@@ -19,7 +19,7 @@ export class CliService {
                 .then(resolve => {
 
                 }).catch( error => {
-                    console.log("[cliService.js Line 21 - ERROR] Error adding task: ", error);
+                    console.log("[taskService.js Line 21 - ERROR] Error adding task: ", error);
             });
     }
 
@@ -80,7 +80,7 @@ export class CliService {
         console.log(`Task "${title}" marked as done successfully.`);
     }
 
-    async listTasks(options) {
+    async listTasksInCli(options) {
         let tasks = await storage.loadTasks(); // Wait for promise
 
         const dateFlagCount = [options.deadline, options.today, options.tomorrow].filter(Boolean).length;
@@ -107,6 +107,10 @@ export class CliService {
         }
 
         CliView.listTasks(tasks);
+    }
+
+    async loadAllTasks() {
+        return await storage.loadTasks();
     }
 
 

@@ -17,10 +17,10 @@
 
 // Import dependencies
 import {Command} from "commander";
-import {CliService} from "./src/services/cliService.js";
+import {TaskService} from "./src/services/taskService.js";
 
-// Initialize cliService handler & commander library
-const cliService = new CliService();
+// Initialize taskService handler & commander library
+const taskService = new TaskService();
 const command = new Command();
 
 // Add command
@@ -31,21 +31,21 @@ command
     .option('--desc <description>', 'Description of the task', '')
     .option('-p, --priority <priority>', 'Priority of the task', '5')
     .option('-d, --deadline <rawDeadline>', 'Deadline of the task in YYYY-MM-DD format', null)
-    .action(cliService.addTask.bind(cliService));
+    .action(taskService.addTask.bind(taskService));
 
 // Remove command
 command
     .command('remove')
     .description('Remove a task')
     .requiredOption('-t, --title <title>', 'Title of the task')
-    .action(cliService.removeTask.bind(cliService));
+    .action(taskService.removeTask.bind(taskService));
 
 // Done command
 command
     .command('done')
     .description('Mark a task as completed')
     .requiredOption('-t, --title <title>', 'Title of the task')
-    .action(cliService.markTaskAsDone.bind(cliService));
+    .action(taskService.markTaskAsDone.bind(taskService));
 
 // List command
 command
@@ -55,7 +55,7 @@ command
     .option('--deadline <deadline>', 'List tasks by deadline')
     .option('--today', 'List tasks due today')
     .option('--tomorrow', 'List tasks due tomorrow')
-    .action(cliService.listTasks.bind(cliService));
+    .action(taskService.listTasksInCli.bind(taskService));
 
 // Help command
 command
