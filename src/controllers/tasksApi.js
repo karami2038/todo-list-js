@@ -4,56 +4,110 @@ import {TaskService} from "../services/taskService.js";
 import {v4 as uuidv4} from "uuid";
 
 const app = express();
-const cliSerice = new TaskService();
+const taskService = new TaskService();
 
-app.disable("x-powered-by");
-
-let todos = [];
-
-try {
-    // Load all tasks with top-level await
-    todos = await cliService.loadAllTasks();
-
-    // Store tasks in memory for REST API retrieval
-} catch (error) {
-    console.error("Error loading tasks:", error);
-}
+app.disable("x-powered-by"); // Security best practice to hide server info
 
 app.use(bodyParser.json());
 
 /**
- * GET /api
- * @summary API Root Endpoint
- * @description A simple endpoint to verify that the TODO List API is running.
- * @returns {string} A message indicating that the API is operational.
+ * @openapi
+ * /api:
+ *   get:
+ *     summary: API Status Check
+ *     description: Returns a simple message indicating that the TODO List API is running.
+ *     responses:
+ *       200:
+ *         description: A message indicating the API is running.
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
  */
 app.get("/api", (req, res) => {
     res.send("TODO List API is running."); // Just for debug purposes
 });
 
 /**
- * GET /api/todos
- * @summary Retrieve All TODOs
- * @description Fetches a list of all TODO items.
- * @returns {Array} An array of TODO items.
+ * @openapi
+ * /api/todos:
+ *   get:
+ *     summary: Retrieve All TODOs
+ *     description: Fetches all TODO items.
+ *     responses:
+ *       200:
+ *         description: A list of TODO items.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                     description: The TODO item ID.
+ *                   title:
+ *                     type: string
+ *                     description: The title of the TODO item.
+ *                   description:
+ *                     type: string
+ *                     description: The description of the TODO item.
+ *                   completed:
+ *                     type: boolean
+ *                     description: The completion status of the TODO item.
+ *                   deadline:
+ *                     type: string
+ *                     format: date-time
+ *                     description: The deadline of the TODO item.
  */
-app.get('/api/todos', (req, res) => {
-    res.json(todos);
+app.get('/api/todos', async (req, res) => {
+    res.json(await taskService.loadAllTasks());
 })
 
 /**
- * GET /api/todos/:id
- * @summary Retrieve a Specific TODO
- * @description Fetches a specific TODO item by its ID.
- * @param {string} id - The ID of the TODO item to retrieve.
- * @returns {Object} The TODO item with the specified ID.
- * @throws {404} If the TODO item is not found.
+ * @openapi
+ * /api/todos/{id}:
+ *   get:
+ *     summary: Retrieve a Specific TODO
+ *     description: Fetches a specific TODO item by its ID.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the TODO item to retrieve.
+ *     responses:
+ *       200:
+ *         description: The requested TODO item.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   description: The TODO item ID.
+ *                 title:
+ *                   type: string
+ *                   description: The title of the TODO item.
+ *                 description:
+ *                   type: string
+ *                   description: The description of the TODO item.
+ *                 completed:
+ *                   type: boolean
+ *                   description: The completion status of the TODO item.
+ *                 deadline:
+ *                   type: string
+ *                   format: date-time
+ *                   description: The deadline of the TODO item.
+ *       404:
+ *         description: TODO item not found.
  */
-app.get('/api/todos/:id', (req, res) => {
+app.get('/api/todos/:id', async (req, res) => {
     const todoId = req.params.id;
-    const todo = todos.find(task =>
-        task.id === todoId
-    );
+    const todo = await taskService.findTaskById(todoId);
 
     if (todo) {
         res.json(todo);
@@ -63,14 +117,61 @@ app.get('/api/todos/:id', (req, res) => {
 })
 
 /**
- * POST /api/todos
- * @summary Create a New TODO
- * @description Creates a new TODO item.
- * @param {Object} todo - The TODO item to create.
- * @returns {Object} The created TODO item.
- * @throws {400} If the request body is invalid.
+ * @openapi
+ * /api/todos:
+ *   post:
+ *     summary: Create a New TODO
+ *     description: Creates a new TODO item.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: The title of the TODO item.
+ *               description:
+ *                 type: string
+ *                 description: The description of the TODO item.
+ *               completed:
+ *                 type: boolean
+ *                 description: The completion status of the TODO item.
+ *               deadline:
+ *                 type: string
+ *                 format: date-time
+ *                 description: The deadline of the TODO item.
+ *     responses:
+ *       201:
+ *         description: The created TODO item.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   description: The TODO item ID.
+ *                 title:
+ *                   type: string
+ *                   description: The title of the TODO item.
+ *                 description:
+ *                   type: string
+ *                   description: The description of the TODO item.
+ *                 completed:
+ *                   type: boolean
+ *                   description: The completion status of the TODO item.
+ *                 deadline:
+ *                   type: string
+ *                   format: date-time
+ *                   description: The deadline of the TODO item.
+ *       400:
+ *         description: Invalid request body.
+ *       500:
+ *         description: Error creating TODO item.
  */
-app.post('/api/todos', (req, res) => {
+app.post('/api/todos', async (req, res) => {
     const { title, description, completed, deadline } = req.body;
 
     if (!title) {
@@ -85,49 +186,230 @@ app.post('/api/todos', (req, res) => {
         deadline: deadline ? new Date(deadline) : new Date()
     };
 
-    todos.push(newTodo);
-    cliSerice.addTask(newTodo);
-    res.status(201).json(newTodo);
+    try {
+        await taskService.addTask(newTodo);
+        return res.status(201).json(newTodo);
+    } catch (error) {
+        console.log("[tasksApi.js Line 123 - ERROR] Error creating todo: ", error);
+        return res.status(500).send("Error creating todo");
+    }
 })
 
 /**
- * PUT /api/todos/:id
- * @summary Update a TODO
- * @description Updates an existing TODO item by its ID.
- * @param {string} id - The ID of the TODO item to update.
- * @param {Object} todo - The updated TODO item data.
- * @returns {Object} The updated TODO item.
- * @throws {400} If the request body is invalid.
- * @throws {404} If the TODO item is not found.
+ * @openapi
+ * /api/todos/{id}:
+ *   put:
+ *     summary: Update a TODO
+ *     description: Updates an existing TODO item by its ID.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the TODO item to update.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: The title of the TODO item.
+ *               description:
+ *                 type: string
+ *                 description: The description of the TODO item.
+ *               completed:
+ *                 type: boolean
+ *                 description: The completion status of the TODO item.
+ *               deadline:
+ *                 type: string
+ *                 format: date-time
+ *                 description: The deadline of the TODO item.
+ *     responses:
+ *       200:
+ *         description: The updated TODO item.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   description: The TODO item ID.
+ *                 title:
+ *                   type: string
+ *                   description: The title of the TODO item.
+ *                 description:
+ *                   type: string
+ *                   description: The description of the TODO item.
+ *                 completed:
+ *                   type: boolean
+ *                   description: The completion status of the TODO item.
+ *                 deadline:
+ *                   type: string
+ *                   format: date-time
+ *                   description: The deadline of the TODO item.
+ *       400:
+ *         description: Invalid request body.
+ *       404:
+ *         description: TODO item not found.
+ *       500:
+ *         description: Error updating TODO item.
  */
-app.put('/api/todos/:id', (req, res) => {
+await app.put('/api/todos/:id', async (req, res) => {
+    const todoId = req.params.id;
+    const { title, description, isCompleted, deadline } = req.body;
 
+    const todo = await taskService.findTaskById(todoId);
+
+    if (!todo) {
+        return res.status(404).send("Todo not found");
+    }
+
+    if (!title) {
+        return res.status(400).send("Title is required");
+    }
+
+    todo.title = title;
+    todo.description = description || '';
+    todo.completed = Boolean(isCompleted);
+    todo.deadline = deadline ? new Date(deadline) : new Date();
+
+    try {
+        await taskService.updateTaskById(todo);
+        res.json(todo);
+    } catch (error) {
+        console.log("[tasksApi.js Line 157 - ERROR] Error updating todo: ", error);
+        return res.status(500).send("Error updating todo");
+    }
 })
 
 /**
- * PATCH /api/todos/:id
- * @summary Partially Update a TODO
- * @description Partially updates an existing TODO item by its ID.
- * @param {string} id - The ID of the TODO item to update.
- * @param {Object} todo - The fields to update in the TODO item.
- * @returns {Object} The updated TODO item.
- * @throws {400} If the request body is invalid.
- * @throws {404} If the TODO item is not found.
+ * @openapi
+ * /api/todos/{id}:
+ *   patch:
+ *     summary: Partially Update a TODO
+ *     description: Partially updates an existing TODO item by its ID.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the TODO item to update.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: The title of the TODO item.
+ *               description:
+ *                 type: string
+ *                 description: The description of the TODO item.
+ *               completed:
+ *                 type: boolean
+ *                 description: The completion status of the TODO item.
+ *               deadline:
+ *                 type: string
+ *                 format: date-time
+ *                 description: The deadline of the TODO item.
+ *     responses:
+ *       200:
+ *         description: The updated TODO item.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   description: The TODO item ID.
+ *                 title:
+ *                   type: string
+ *                   description: The title of the TODO item.
+ *                 description:
+ *                   type: string
+ *                   description: The description of the TODO item.
+ *                 completed:
+ *                   type: boolean
+ *                   description: The completion status of the TODO item.
+ *                 deadline:
+ *                   type: string
+ *                   format: date-time
+ *                   description: The deadline of the TODO item.
+ *       404:
+ *         description: TODO item not found.
+ *       500:
+ *         description: Error updating TODO item.
  */
-app.patch('/api/todos/:id', (req, res) => {
+app.patch('/api/todos/:id', async (req, res) => {
+    const todoId = req.params.id;
+    const { title, description, isCompleted, deadline } = req.body;
 
+    const todo = await taskService.findTaskById(todoId);
+
+    if (!todo) {
+        return res.status(404).send("Todo not found");
+    }
+
+    if (title !== undefined) todo.title = title;
+    if (description !== undefined) todo.description = description;
+    if (isCompleted !== undefined) todo.completed = Boolean(isCompleted);
+    if (deadline !== undefined) todo.deadline = new Date(deadline);
+
+    try {
+        await taskService.updateTaskById(todo);
+        res.json(todo);
+    } catch (error) {
+        console.log("[tasksApi.js Line 200 - ERROR] Error patching todo: ", error);
+        return res.status(500).send("Error patching todo");
+    }
 })
 
 /**
- * DELETE /api/todos/:id
- * @summary Delete a TODO
- * @description Deletes an existing TODO item by its ID.
- * @param {string} id - The ID of the TODO item to delete.
- * @returns {string} A message indicating successful deletion.
- * @throws {404} If the TODO item is not found.
+ * @openapi
+ * /api/todos/{id}:
+ *   delete:
+ *     summary: Delete a TODO
+ *     description: Deletes an existing TODO item by its ID.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the TODO item to delete.
+ *     responses:
+ *       200:
+ *         description: A message indicating successful deletion.
+ *       404:
+ *         description: TODO item not found.
+ *       500:
+ *         description: Error deleting TODO item.
  */
-app.delete('/api/todos/:id', (req, res) => {
+app.delete('/api/todos/:id', async (req, res) => {
+    const todoId = req.params.id;
+    const todo = await taskService.findTaskById(todoId);
 
+    if (!todo) {
+        return res.status(404).send("Todo not found");
+    }
+
+    try {
+        await taskService.removeTaskById(todoId);
+
+        res.send("Todo deleted successfully");
+    } catch (error) {
+        console.log("[tasksApi.js Line 204 - ERROR] Error deleting todo: ", error);
+        return res.status(500).send("Error deleting todo");
+    }
 })
 
 const port = 1220;

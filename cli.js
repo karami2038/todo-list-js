@@ -38,14 +38,14 @@ command
     .command('remove')
     .description('Remove a task')
     .requiredOption('-t, --title <title>', 'Title of the task')
-    .action(taskService.removeTask.bind(taskService));
+    .action(taskService.removeTaskByTitle.bind(taskService));
 
 // Done command
 command
     .command('done')
     .description('Mark a task as completed')
     .requiredOption('-t, --title <title>', 'Title of the task')
-    .action(taskService.markTaskAsDone.bind(taskService));
+    .action(taskService.markTaskAsDoneByTitle.bind(taskService));
 
 // List command
 command

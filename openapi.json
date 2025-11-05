@@ -1,0 +1,407 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "TODO List API",
+    "version": "0.0.0",
+    "description": "OpenAPI specification for the TODO list backend"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:1220"
+    }
+  ],
+  "paths": {
+    "/api": {
+      "get": {
+        "summary": "API Status Check",
+        "description": "Returns a simple message indicating that the TODO List API is running.",
+        "responses": {
+          "200": {
+            "description": "A message indicating the API is running.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/todos": {
+      "get": {
+        "summary": "Retrieve All TODOs",
+        "description": "Fetches all TODO items.",
+        "responses": {
+          "200": {
+            "description": "A list of TODO items.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "The TODO item ID."
+                      },
+                      "title": {
+                        "type": "string",
+                        "description": "The title of the TODO item."
+                      },
+                      "description": {
+                        "type": "string",
+                        "description": "The description of the TODO item."
+                      },
+                      "completed": {
+                        "type": "boolean",
+                        "description": "The completion status of the TODO item."
+                      },
+                      "deadline": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "The deadline of the TODO item."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a New TODO",
+        "description": "Creates a new TODO item.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "The title of the TODO item."
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "The description of the TODO item."
+                  },
+                  "completed": {
+                    "type": "boolean",
+                    "description": "The completion status of the TODO item."
+                  },
+                  "deadline": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The deadline of the TODO item."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The created TODO item.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The TODO item ID."
+                    },
+                    "title": {
+                      "type": "string",
+                      "description": "The title of the TODO item."
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "The description of the TODO item."
+                    },
+                    "completed": {
+                      "type": "boolean",
+                      "description": "The completion status of the TODO item."
+                    },
+                    "deadline": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "The deadline of the TODO item."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body."
+          },
+          "500": {
+            "description": "Error creating TODO item."
+          }
+        }
+      }
+    },
+    "/api/todos/{id}": {
+      "get": {
+        "summary": "Retrieve a Specific TODO",
+        "description": "Fetches a specific TODO item by its ID.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the TODO item to retrieve."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The requested TODO item.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The TODO item ID."
+                    },
+                    "title": {
+                      "type": "string",
+                      "description": "The title of the TODO item."
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "The description of the TODO item."
+                    },
+                    "completed": {
+                      "type": "boolean",
+                      "description": "The completion status of the TODO item."
+                    },
+                    "deadline": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "The deadline of the TODO item."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "TODO item not found."
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a TODO",
+        "description": "Updates an existing TODO item by its ID.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the TODO item to update."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "The title of the TODO item."
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "The description of the TODO item."
+                  },
+                  "completed": {
+                    "type": "boolean",
+                    "description": "The completion status of the TODO item."
+                  },
+                  "deadline": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The deadline of the TODO item."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated TODO item.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The TODO item ID."
+                    },
+                    "title": {
+                      "type": "string",
+                      "description": "The title of the TODO item."
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "The description of the TODO item."
+                    },
+                    "completed": {
+                      "type": "boolean",
+                      "description": "The completion status of the TODO item."
+                    },
+                    "deadline": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "The deadline of the TODO item."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body."
+          },
+          "404": {
+            "description": "TODO item not found."
+          },
+          "500": {
+            "description": "Error updating TODO item."
+          }
+        }
+      },
+      "patch": {
+        "summary": "Partially Update a TODO",
+        "description": "Partially updates an existing TODO item by its ID.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the TODO item to update."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "The title of the TODO item."
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "The description of the TODO item."
+                  },
+                  "completed": {
+                    "type": "boolean",
+                    "description": "The completion status of the TODO item."
+                  },
+                  "deadline": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The deadline of the TODO item."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated TODO item.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The TODO item ID."
+                    },
+                    "title": {
+                      "type": "string",
+                      "description": "The title of the TODO item."
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "The description of the TODO item."
+                    },
+                    "completed": {
+                      "type": "boolean",
+                      "description": "The completion status of the TODO item."
+                    },
+                    "deadline": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "The deadline of the TODO item."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "TODO item not found."
+          },
+          "500": {
+            "description": "Error updating TODO item."
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a TODO",
+        "description": "Deletes an existing TODO item by its ID.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the TODO item to delete."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A message indicating successful deletion."
+          },
+          "404": {
+            "description": "TODO item not found."
+          },
+          "500": {
+            "description": "Error deleting TODO item."
+          }
+        }
+      }
+    }
+  },
+  "components": {},
+  "tags": []
+}
