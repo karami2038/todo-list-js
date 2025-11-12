@@ -412,8 +412,4 @@ app.delete('/api/todos/:id', async (req, res) => {
     }
 })
 
-const port = 1220;
-
-app.listen(port, () => {
-    console.log(`Listening on  http://localhost:${port}/`);
-});
+export default app;
